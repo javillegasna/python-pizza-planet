@@ -10,20 +10,56 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  CI_Pizza_Planet:
-    runs-on: ubuntu-latest
+  install_dependencies:
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout to feature branch
         uses: actions/checkout@v3
 
-      - name: Create venv
+      - name: Creating or Restoring .venv cache
+        id: cached_venv
+        uses: actions/cache@v3
+        with:
+          path : .venv
+          key: CI_P_P_${{hashFiles('requirements.txt')}}
+      
+      - name: Creating virtual environment 
+        if: steps.cached_venv.outputs.cache-hit != true
         run: make  create_environment
 
       - name: Install dependencies
         run: make install_dependencies 
 
+  run_lint:
+    runs-on: ubuntu-22.04
+    needs: [install_dependencies]
+    steps:
+      - name: Checkout to feature branch
+        uses: actions/checkout@v3
+
+      - name: Restoring cached venv
+        id: cached_venv
+        uses: actions/cache@v3
+        with:
+          path : .venv
+          key: CI_P_P_${{hashFiles('requirements.txt')}} 
+
       - name: Run lint
         run: make run_lint
+
+  run_tests:
+    runs-on: ubuntu-22.04
+    needs: [install_dependencies]
+    steps:
+      - name: Checkout to feature branch
+        uses: actions/checkout@v3
+
+      - name: Restoring cached venv
+        id: cached_venv
+        uses: actions/cache@v3
+        with:
+          path : .venv
+          key: CI_P_P_${{hashFiles('requirements.txt')}}
 
       - name: Run tests
         run: make run_tests
