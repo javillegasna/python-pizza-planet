@@ -15,6 +15,10 @@ start_database:
 	. .venv/bin/activate && python3 manage.py db migrate
 	. .venv/bin/activate && python3 manage.py db upgrade
 
+delete_database:
+	rm -r migrations
+	rm -r pizza.sqlite
+
 run_tests:
 	. .venv/bin/activate && pytest -v app/test/ 
 
