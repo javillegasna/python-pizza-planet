@@ -1,6 +1,5 @@
-from app.common.http_methods import GET
 from flask import Blueprint, jsonify
-
+from ..common.http_methods import GET
 from ..controllers import IndexController
 
 index = Blueprint("index", __name__)
