@@ -32,7 +32,6 @@ class OrderDetailSerializer(ma.SQLAlchemyAutoSchema):
         model = OrderDetail
         load_instance = True
         fields = ("_id", "ingredient", "beverage", "total_detail_price")
-        beverage = ma.Nested(BeverageSerializer)
 
 
 class OrderSerializer(ma.SQLAlchemyAutoSchema):
