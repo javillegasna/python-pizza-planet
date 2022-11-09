@@ -26,7 +26,7 @@ run_lint:
 	. .venv/bin/activate && flake8 app/
 
 run_coverage_report:
-	. .venv/bin/activate && pytest --cache-clear --cov-config=.coveragerc --cov=app app/test/
+	. .venv/bin/activate && pytest --cov-config=.coveragerc --cov=app app/test/ 
 
 save_coverage_report:
 	. .venv/bin/activate && pytest --cache-clear --cov-config=.coveragerc --cov=app app/test/ > pytest-coverage.txt
