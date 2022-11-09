@@ -5,6 +5,7 @@ from ..repositories.managers import (
     IngredientManager,
     OrderManager,
     SizeManager,
+    BeverageManager,
 )
 from .base import BaseController
 
@@ -20,9 +21,14 @@ class OrderController(BaseController):
     )
 
     @staticmethod
-    def calculate_order_price(size_price: float, ingredients: list):
+    def calculate_order_price(
+        size_price: float,
+        ingredients: list,
+        beverages: list,
+    ):
         ingredients_price = sum(ingredient.price for ingredient in ingredients)
-        total_price = ingredients_price + size_price
+        beverages_price = sum(beverage.price for beverage in beverages)
+        total_price = beverages_price + ingredients_price + size_price
         return round(total_price, 2)
 
     @classmethod
@@ -37,11 +43,23 @@ class OrderController(BaseController):
         if not size:
             return "Invalid size for Order", None
 
+        beverage_ids = current_order.pop("beverages", [])
         ingredient_ids = current_order.pop("ingredients", [])
+
         try:
             ingredients = IngredientManager.get_by_id_list(ingredient_ids)
-            price = cls.calculate_order_price(size.get("price"), ingredients)
+            beverages = BeverageManager.get_by_id_list(beverage_ids)
+            price = cls.calculate_order_price(
+                size.get("price"),
+                ingredients,
+                beverages,
+            )
             order_with_price = {**current_order, "total_price": price}
-            return cls.manager.create(order_with_price, ingredients), None
+            created_order = cls.manager.create(
+                order_with_price,
+                ingredients,
+                beverages,
+            )
+            return created_order, None
         except (SQLAlchemyError, RuntimeError) as ex:
             return None, str(ex)
