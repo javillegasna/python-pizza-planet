@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 concurrency: 
   group: CI_P_P_${{github.ref}}
@@ -28,6 +31,7 @@ jobs:
         run: make  create_environment
 
       - name: Install dependencies
+        if: steps.venv-cache.outputs.cache-hit != true
         run: make install_dependencies 
 
   run_lint:
@@ -66,7 +70,7 @@ jobs:
 
   run_coverage:
     runs-on: ubuntu-22.04
-    needs: [install_dependencies]
+    needs: [run_lint, run_tests]
     steps:
       - name: Checkout to feature branch
         uses: actions/checkout@v3
@@ -79,7 +83,10 @@ jobs:
           key: CI_P_P_${{hashFiles('requirements.txt')}}
 
       - name: Run coverage report
-        run: make save_coverage_report
+        run: make run_coverage_report
       
       - name: Comment coverage
-        uses: coroo/pytest-coverage-commentator@v1.0.2
+        uses: ewjoachim/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          MINIMUM_GREEN: 90
