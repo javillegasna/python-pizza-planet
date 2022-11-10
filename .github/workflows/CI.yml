@@ -19,20 +19,23 @@ jobs:
       - name: Checkout to feature branch
         uses: actions/checkout@v3
 
-      - name: Creating or Restoring .venv cache
-        id: cached_venv
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
         uses: actions/cache@v3
         with:
-          path : .venv
-          key: CI_P_P_${{hashFiles('requirements.txt')}}
-      
-      - name: Creating virtual environment 
-        if: steps.cached_venv.outputs.cache-hit != true
-        run: make  create_environment
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.venv-cache.outputs.cache-hit != true
-        run: make install_dependencies 
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
 
   run_lint:
     runs-on: ubuntu-22.04
@@ -46,7 +49,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path : .venv
-          key: CI_P_P_${{hashFiles('requirements.txt')}} 
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Run lint
         run: make run_lint
@@ -63,7 +66,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path : .venv
-          key: CI_P_P_${{hashFiles('requirements.txt')}}
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Run tests
         run: make run_tests
@@ -80,7 +83,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path : .venv
-          key: CI_P_P_${{hashFiles('requirements.txt')}}
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Run coverage report
         run: make run_coverage_report
