@@ -4,5 +4,7 @@
         "app"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "plantuml.server": "http://www.plantuml.com/plantuml",
+    "plantuml.render": "Local",
 }
