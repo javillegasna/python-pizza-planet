@@ -1,8 +1,14 @@
 create_environment:
 	python3 -m venv .venv
 
+install:
+	poetry install
+
 install_dependencies:
 	. .venv/bin/activate && pip install -r requirements.txt
+
+uninstall_dependencies:
+	. .venv/bin/activate && pip uninstall -r requirements.txt -y
 
 start_server:
 	. .venv/bin/activate && python3 manage.py run
@@ -32,4 +38,4 @@ save_coverage_report:
 	. .venv/bin/activate && pytest --cache-clear --cov-config=.coveragerc --cov=app app/test/ > pytest-coverage.txt
 
 migrate_poetry:
-	cat requirements.txt | xargs poetry add
+	. .venv/bin/activate && pip install poetry && poetry init --no-interaction && cat requirements.txt | xargs poetry add
