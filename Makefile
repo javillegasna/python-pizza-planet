@@ -3,12 +3,6 @@ create_environment:
 	python3 -m venv .venv && $(VENV_ACTIVATE) && pip install poetry 
 
 
-install_dependencies:
-	$(VENV_ACTIVATE) && pip install -r requirements.txt
-
-uninstall_dependencies:
-	$(VENV_ACTIVATE) && pip uninstall -r requirements.txt -y
-
 install:
 	$(VENV_ACTIVATE) && poetry install --no-interaction --no-root
 
@@ -26,6 +20,9 @@ start_database:
 delete_database:
 	rm -r migrations
 	rm -r pizza.sqlite
+
+run_seeder:
+	$(VENV_ACTIVATE) && python3 manage.py seed run --root app/seeds
 
 run_tests:
 	$(VENV_ACTIVATE) && pytest -v app/test/ 
