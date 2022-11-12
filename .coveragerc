@@ -1,3 +1,5 @@
 [run]
-omit = app/test/*
+omit = 
+    app/test/*
+    app/seeds/*
 relative_files = true
