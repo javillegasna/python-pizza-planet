@@ -10,7 +10,7 @@ start_server:
 	$(VENV_ACTIVATE) && python3 manage.py run
 
 start_server_hot_reload:
-	$(VENV_ACTIVATE) && python3 manage.py hot-reload
+	$(VENV_ACTIVATE) && python3 manage.py hot_reload
 
 start_database:
 	$(VENV_ACTIVATE) && python3 manage.py db init

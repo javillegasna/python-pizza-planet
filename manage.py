@@ -1,3 +1,4 @@
+import os
 import pytest
 from flask.cli import FlaskGroup
 from flask_migrate import Migrate
@@ -21,6 +22,11 @@ seeder.init_app(flask_app, db)
 def test():
     return pytest.main(['-v', './app/test'])
 
+@manager.command('hot_reload')
+def hot_reload():
+    os.environ.pop("FLASK_RUN_FROM_CLI")
+    os.environ["FLASK_ENV"] = "development"
+    flask_app.run()
 
 if __name__ == '__main__':
     manager()
